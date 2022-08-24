@@ -2,23 +2,27 @@ date=$(date '+%Y-%m-%d-%H-%M')
 fullbackup='/var/mariadb/backup'
 incrbackup='/var/mariadb/increm'
 archivepth='/var/mariadb/archive'
-encryptkey='YOUR PASSWORD'
+encryptkey='YOUR KEY TO ENCRYPT'
+dbuser='YOUR DB USERNAME'
+dbpass='YOUR DB PASSWORD'
 
 if [ $1 = 'full' ]; then
     rm -rf $fullbackup
-    mariabackup --backup --user=root \
+    mkdir -p $fullbackup
+    mariabackup --backup --user=$dbuser --password=$dbpass \
         --target-dir=$fullbackup
 
     mkdir -p $archivepth
     filename=$date-full.tar.gz.ssl
-    sudo tar -czf - $fullbackup | openssl enc \
+    tar -czf - $fullbackup | openssl enc \
         -out $archivepth\$filename \
         -e -aes256 \
         -k $encryptkey
 
 elif [ $1 = 'incr' ]; then
     rm -rf $incrbackup
-    mariabackup --backup --user=root \
+    mkdir -p $incrbackup
+    mariabackup --backup --user=$dbuser --password=$dbpass \
         --target-dir=$incrbackup \
         --incremental-basedir=$fullbackup
 
