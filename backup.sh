@@ -15,7 +15,7 @@ if [ $1 = 'full' ]; then
     mkdir -p $archivepth
     filename=$date-full.tar.gz.ssl
     tar -czf - $fullbackup | openssl enc \
-        -out $archivepth\$filename \
+        -out $archivepth/$filename \
         -e -aes256 \
         -k $encryptkey
 
